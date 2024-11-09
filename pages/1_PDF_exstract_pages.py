@@ -1,6 +1,25 @@
 import streamlit as st
-import pdf_utils as pu
-from PyPDF2 import PdfReader
+from PyPDF2 import PdfReader, PdfWriter
+import io
+
+# Function to extract pages from PDF
+def extract_pages(pdf_file, start_page, end_page):
+    reader = PdfReader(pdf_file)
+    writer = PdfWriter()
+    
+    # Ensure page indices are within range
+    num_pages = len(reader.pages)
+    start_page = max(1, start_page)
+    end_page = min(end_page, num_pages)
+    
+    for page_num in range(start_page - 1, end_page):
+        writer.add_page(reader.pages[page_num])
+    
+    extracted_pdf = io.BytesIO()
+    writer.write(extracted_pdf)
+    extracted_pdf.seek(0)
+    
+    return extracted_pdf
 
 # Streamlit UI
 st.title("PDF Page Extractor")
@@ -24,7 +43,7 @@ if uploaded_file:
         # Validate page range
         if start_page <= end_page:
             # Extract the specified pages
-            extracted_pdf = pu.extract_pages(uploaded_file, start_page, end_page)
+            extracted_pdf = extract_pages(uploaded_file, start_page, end_page)
             
             # Display success message and download button
             st.success("Pages extracted successfully!")
