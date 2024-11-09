@@ -41,7 +41,7 @@ def parse_page_ranges(page_ranges, num_pages):
     return pages_to_rotate
 
 # Streamlit app interface
-st.title("Rotate PDF Pages with Selected Pages Option")
+st.title("↻Rotate PDF↻")
 
 # File upload
 uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
