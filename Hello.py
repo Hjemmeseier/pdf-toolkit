@@ -14,10 +14,17 @@ def run():
     st.sidebar.success("Select a pdf tool.")
 
     st.markdown(
-        """
-        Pdf tools is part of a Streamlit project developed by Jaran Gjerland Stenstad, using only chat gpt and an Android phone, to see how far you can can come only using your phone. 
-       
-        **👈 Select a pdf-tool from the sidebar**
+    """
+    **PDF Tools** is a Streamlit project developed by Jaran Gjerland Stenstad using only ChatGPT and an Android phone. 
+    
+    Why? I want to stop scrolling and start creating.
+    The goal? To see how far you can go with just a mobile device for development—so stop scrolling and dive into the possibilities!
+
+    **👈 Select a PDF tool from the sidebar** or explore individual tools directly:
+
+    - [🔗 Merge PDF](https://pdf-toolkit.streamlit.app/merge_pdf)
+    - [🔗 Extract Pages from PDF](https://pdf-toolkit.streamlit.app/PDF_exstract_pages)
+    - [🔗 Rotate PDF Pages](https://pdf-toolkit.streamlit.app/Rotate_Pages)
     """
     )
 
