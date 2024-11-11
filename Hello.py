@@ -17,8 +17,10 @@ def run():
     """
     **PDF Tools** is a Streamlit project developed by Jaran Gjerland Stenstad using only ChatGPT and an Android phone. 
     
-    The goal? To stop scrolling and start creating useful and to see how far you can go with just a mobile device for development.
-
+    The goal? 
+    - To see how far you can go with just a mobile device for development.
+    - To replace scrolling time with creation time and at the same time meke some useful tools. 
+    
     **👈 Select a PDF tool from the sidebar** or explore individual tools directly:
 
     - [🔗 Merge PDF](https://pdf-toolkit.streamlit.app/merge_pdf)
