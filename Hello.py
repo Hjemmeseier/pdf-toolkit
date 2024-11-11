@@ -19,7 +19,7 @@ def run():
     
     The goal? 
     - To see how far you can go with just a mobile device for development.
-    - To replace scrolling time with creation time and at the same time meke some useful tools. 
+    - To replace scrolling time with creation time and at the same time end up with a nifty little toolbox. 
     
     **👈 Select a PDF tool from the sidebar** or explore individual tools directly:
 
