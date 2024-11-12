@@ -1,5 +1,5 @@
 import streamlit as st
-from pymupdf import fitz  # PyMuPDF
+import fitz  # PyMuPDF
 from io import BytesIO
 
 def add_header_footer(pdf_file, header_text, footer_text, header_align, footer_align, pages):
