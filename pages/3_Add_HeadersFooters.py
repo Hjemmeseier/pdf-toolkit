@@ -2,9 +2,9 @@ import streamlit as st
 import fitz  # PyMuPDF
 from io import BytesIO
 
-def add_header_footer(pdf_file, header_text, footer_text, pages):
-    # Open the PDF file
-    pdf_document = fitz.open(stream=pdf_file.read(), filetype="pdf")
+def add_header_footer(pdf_data, header_text, footer_text, pages):
+    # Open the PDF file from BytesIO
+    pdf_document = fitz.open(stream=pdf_data, filetype="pdf")
     num_pages = pdf_document.page_count
     
     # Process each page based on user selection
@@ -66,12 +66,16 @@ page_ranges = st.text_input("Enter pages to apply header/footer (e.g., 1,2,3,4-6
 # Button to add header and footer
 if st.button("Add Header and Footer"):
     if uploaded_file is not None:
+        # Read the file only once
+        pdf_data = BytesIO(uploaded_file.read())
+        
         # Parse pages and apply header/footer
-        num_pages = fitz.open(stream=uploaded_file.read(), filetype="pdf").page_count
+        num_pages = fitz.open(stream=pdf_data, filetype="pdf").page_count
+        pdf_data.seek(0)  # Reset the pointer after checking the number of pages
         pages_to_apply_set = parse_page_ranges(page_ranges, num_pages)
         
         # Generate updated PDF
-        output_pdf = add_header_footer(uploaded_file, header_text, footer_text, pages_to_apply_set)
+        output_pdf = add_header_footer(pdf_data, header_text, footer_text, pages_to_apply_set)
 
         # Provide download button
         if output_pdf:
