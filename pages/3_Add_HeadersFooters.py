@@ -2,7 +2,7 @@ import streamlit as st
 import fitz  # PyMuPDF
 from io import BytesIO
 
-def add_header_footer(pdf_data, header_text, footer_text, pages):
+def add_header_footer(pdf_data, header_text, footer_text, header_align, footer_align, header_font_size, footer_font_size, pages):
     # Open the PDF file from BytesIO
     pdf_document = fitz.open(stream=pdf_data, filetype="pdf")
     num_pages = pdf_document.page_count
@@ -16,15 +16,15 @@ def add_header_footer(pdf_data, header_text, footer_text, pages):
         page_width = page.rect.width
         page_height = page.rect.height
 
-        # Add header
+        # Add header with alignment
         if header_text:
-            header_position = fitz.Point(40, 30)  # Top-left position for header
-            page.insert_text(header_position, header_text, fontsize=12)
+            header_position = get_text_position(page_width, header_align, header_font_size)
+            page.insert_text(header_position, header_text, fontsize=header_font_size, fontname="helv")
 
-        # Add footer
+        # Add footer with alignment
         if footer_text:
-            footer_position = fitz.Point(40, page_height - 30)  # Bottom-left position for footer
-            page.insert_text(footer_position, footer_text, fontsize=12)
+            footer_position = get_text_position(page_width, footer_align, footer_font_size, page_height)
+            page.insert_text(footer_position, footer_text, fontsize=footer_font_size, fontname="helv")
 
     # Save the updated PDF to a BytesIO buffer
     output_pdf = BytesIO()
@@ -32,6 +32,18 @@ def add_header_footer(pdf_data, header_text, footer_text, pages):
     pdf_document.close()
     output_pdf.seek(0)
     return output_pdf
+
+def get_text_position(page_width, align, font_size, y_position=None):
+    """Helper function to determine the x-position based on alignment."""
+    if align == "left":
+        x_position = 40
+    elif align == "center":
+        x_position = page_width / 2
+    elif align == "right":
+        x_position = page_width - 40
+    # Default y-positions for header and footer
+    y_position = y_position or 30 if y_position is None else y_position
+    return fitz.Point(x_position, y_position)
 
 def parse_page_ranges(page_ranges, num_pages):
     """Parse string page ranges to a set of zero-based page indices."""
@@ -51,7 +63,7 @@ def parse_page_ranges(page_ranges, num_pages):
     return pages_to_apply
 
 # Streamlit app interface
-st.title("Add Header and Footer to Selected Pages in PDF")
+st.title("Add Header and Footer with Alignment and Font Options")
 
 # File upload
 uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
@@ -59,6 +71,16 @@ uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
 # Header and Footer inputs
 header_text = st.text_input("Header Text", "")
 footer_text = st.text_input("Footer Text", "")
+
+# Alignment options
+st.subheader("Header and Footer Alignment")
+header_align = st.selectbox("Header Alignment", ["left", "center", "right"])
+footer_align = st.selectbox("Footer Alignment", ["left", "center", "right"])
+
+# Font size options
+st.subheader("Font Size")
+header_font_size = st.slider("Header Font Size", min_value=8, max_value=24, value=12)
+footer_font_size = st.slider("Footer Font Size", min_value=8, max_value=24, value=12)
 
 # Page selection input
 page_ranges = st.text_input("Enter pages to apply header/footer (e.g., 1,2,3,4-6)", value="")
@@ -75,7 +97,7 @@ if st.button("Add Header and Footer"):
         pages_to_apply_set = parse_page_ranges(page_ranges, num_pages)
         
         # Generate updated PDF
-        output_pdf = add_header_footer(pdf_data, header_text, footer_text, pages_to_apply_set)
+        output_pdf = add_header_footer(pdf_data, header_text, footer_text, header_align, footer_align, header_font_size, footer_font_size, pages_to_apply_set)
 
         # Provide download button
         if output_pdf:
@@ -86,4 +108,4 @@ if st.button("Add Header and Footer"):
                 mime="application/pdf"
             )
     else:
-        st.warning("Please upload a PDF file.")
+        st.warning("Please upload a PDF file.")æ
