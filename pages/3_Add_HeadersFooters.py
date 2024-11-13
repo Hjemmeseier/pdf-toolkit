@@ -108,4 +108,4 @@ if st.button("Add Header and Footer"):
                 mime="application/pdf"
             )
     else:
-        st.warning("Please upload a PDF file.")æ
+        st.warning("Please upload a PDF file.")
