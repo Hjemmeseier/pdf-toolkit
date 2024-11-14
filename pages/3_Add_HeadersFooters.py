@@ -2,7 +2,7 @@ import streamlit as st
 import fitz  # PyMuPDF
 from io import BytesIO
 
-def add_header_footer(pdf_data, header_text, footer_text, header_align, footer_align, header_font_size, footer_font_size, pages):
+def add_header_footer(pdf_data, header_text, footer_text, header_align, footer_align, header_font_size, footer_font_size, pages, add_page_numbers):
     # Open the PDF file from BytesIO
     pdf_document = fitz.open(stream=pdf_data, filetype="pdf")
     num_pages = pdf_document.page_count
@@ -21,10 +21,14 @@ def add_header_footer(pdf_data, header_text, footer_text, header_align, footer_a
             header_position = get_text_position(page_width, header_align, header_font_size, 30)
             page.insert_text(header_position, header_text, fontsize=header_font_size, fontname="helv")
 
-        # Add footer with alignment
-        if footer_text:
+        # Add footer with alignment and optional page number
+        footer_content = footer_text
+        if add_page_numbers:
+            footer_content += f" - Page {i + 1}" if footer_content else f"Page {i + 1}"
+
+        if footer_content:
             footer_position = get_text_position(page_width, footer_align, footer_font_size, page_height - 40)
-            page.insert_text(footer_position, footer_text, fontsize=footer_font_size, fontname="helv")
+            page.insert_text(footer_position, footer_content, fontsize=footer_font_size, fontname="helv")
 
     # Save the updated PDF to a BytesIO buffer
     output_pdf = BytesIO()
@@ -35,15 +39,11 @@ def add_header_footer(pdf_data, header_text, footer_text, header_align, footer_a
 
 def get_text_position(page_width, align, font_size, y_position):
     """Helper function to determine the x-position based on alignment, keeping text within page bounds."""
-    # Text padding to prevent overflow
-    padding = 20
+    # Text positioning based on alignment
     if align == "left":
-        x_position = padding
+        x_position = 40
     elif align == "center":
         x_position = page_width / 2
-    elif align == "right":
-        x_position = page_width - padding
-
     return fitz.Point(x_position, y_position)
 
 def parse_page_ranges(page_ranges, num_pages):
@@ -64,7 +64,7 @@ def parse_page_ranges(page_ranges, num_pages):
     return pages_to_apply
 
 # Streamlit app interface
-st.title("Add Header and Footer with Alignment and Font Options")
+st.title("Add Header and Footer with Alignment, Font Options, and Page Numbers")
 
 # File upload
 uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
@@ -75,8 +75,8 @@ footer_text = st.text_input("Footer Text", "")
 
 # Alignment options
 st.subheader("Header and Footer Alignment")
-header_align = st.selectbox("Header Alignment", ["left", "center", "right"])
-footer_align = st.selectbox("Footer Alignment", ["left", "center", "right"])
+header_align = st.selectbox("Header Alignment", ["left", "center"])
+footer_align = st.selectbox("Footer Alignment", ["left", "center"])
 
 # Font size options
 st.subheader("Font Size")
@@ -85,6 +85,9 @@ footer_font_size = st.slider("Footer Font Size", min_value=8, max_value=24, valu
 
 # Page selection input
 page_ranges = st.text_input("Enter pages to apply header/footer (e.g., 1,2,3,4-6)", value="")
+
+# Page number option
+add_page_numbers = st.checkbox("Include Page Numbers in Footer")
 
 # Button to add header and footer
 if st.button("Add Header and Footer"):
@@ -98,7 +101,7 @@ if st.button("Add Header and Footer"):
         pages_to_apply_set = parse_page_ranges(page_ranges, num_pages)
         
         # Generate updated PDF
-        output_pdf = add_header_footer(pdf_data, header_text, footer_text, header_align, footer_align, header_font_size, footer_font_size, pages_to_apply_set)
+        output_pdf = add_header_footer(pdf_data, header_text, footer_text, header_align, footer_align, header_font_size, footer_font_size, pages_to_apply_set, add_page_numbers)
 
         # Provide download button
         if output_pdf:
