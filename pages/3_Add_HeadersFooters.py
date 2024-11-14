@@ -18,12 +18,12 @@ def add_header_footer(pdf_data, header_text, footer_text, header_align, footer_a
 
         # Add header with alignment
         if header_text:
-            header_position = get_text_position(page_width, header_align, header_font_size)
+            header_position = get_text_position(page_width, header_align, header_font_size, 30)
             page.insert_text(header_position, header_text, fontsize=header_font_size, fontname="helv")
 
         # Add footer with alignment
         if footer_text:
-            footer_position = get_text_position(page_width, footer_align, footer_font_size, page_height)
+            footer_position = get_text_position(page_width, footer_align, footer_font_size, page_height - 40)
             page.insert_text(footer_position, footer_text, fontsize=footer_font_size, fontname="helv")
 
     # Save the updated PDF to a BytesIO buffer
@@ -33,16 +33,17 @@ def add_header_footer(pdf_data, header_text, footer_text, header_align, footer_a
     output_pdf.seek(0)
     return output_pdf
 
-def get_text_position(page_width, align, font_size, y_position=None):
-    """Helper function to determine the x-position based on alignment."""
+def get_text_position(page_width, align, font_size, y_position):
+    """Helper function to determine the x-position based on alignment, keeping text within page bounds."""
+    # Text padding to prevent overflow
+    padding = 20
     if align == "left":
-        x_position = 40
+        x_position = padding
     elif align == "center":
         x_position = page_width / 2
     elif align == "right":
-        x_position = page_width - 40
-    # Default y-positions for header and footer
-    y_position = y_position or 30 if y_position is None else y_position
+        x_position = page_width - padding
+
     return fitz.Point(x_position, y_position)
 
 def parse_page_ranges(page_ranges, num_pages):
