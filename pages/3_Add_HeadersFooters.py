@@ -2,7 +2,7 @@ import streamlit as st
 import fitz  # PyMuPDF
 from io import BytesIO
 
-def add_header_footer(pdf_data, header_text, footer_text, header_align, footer_align, header_font_size, footer_font_size, pages, add_page_numbers):
+def add_header_footer(pdf_data, header_text, footer_text, header_align, footer_align, header_font_size, footer_font_size, pages, add_page_numbers, page_number_prefix):
     # Open the PDF file from BytesIO
     pdf_document = fitz.open(stream=pdf_data, filetype="pdf")
     num_pages = pdf_document.page_count
@@ -24,7 +24,8 @@ def add_header_footer(pdf_data, header_text, footer_text, header_align, footer_a
         # Add footer with alignment and optional page number
         footer_content = footer_text
         if add_page_numbers:
-            footer_content += f" - Page {i + 1}" if footer_content else f"Page {i + 1}"
+            page_number_text = f"{page_number_prefix} {i + 1}"
+            footer_content += f" - {page_number_text}" if footer_content else page_number_text
 
         if footer_content:
             footer_position = get_text_position(page_width, footer_align, footer_font_size, page_height - 40)
@@ -86,8 +87,9 @@ footer_font_size = st.slider("Footer Font Size", min_value=8, max_value=24, valu
 # Page selection input
 page_ranges = st.text_input("Enter pages to apply header/footer (e.g., 1,2,3,4-6)", value="")
 
-# Page number option
+# Page number options
 add_page_numbers = st.checkbox("Include Page Numbers in Footer")
+page_number_prefix = st.text_input("Page Number Prefix (e.g., Page, Pg, P.)", value="Page")
 
 # Button to add header and footer
 if st.button("Add Header and Footer"):
@@ -101,7 +103,7 @@ if st.button("Add Header and Footer"):
         pages_to_apply_set = parse_page_ranges(page_ranges, num_pages)
         
         # Generate updated PDF
-        output_pdf = add_header_footer(pdf_data, header_text, footer_text, header_align, footer_align, header_font_size, footer_font_size, pages_to_apply_set, add_page_numbers)
+        output_pdf = add_header_footer(pdf_data, header_text, footer_text, header_align, footer_align, header_font_size, footer_font_size, pages_to_apply_set, add_page_numbers, page_number_prefix)
 
         # Provide download button
         if output_pdf:
