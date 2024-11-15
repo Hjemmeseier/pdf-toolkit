@@ -65,7 +65,7 @@ def parse_page_ranges(page_ranges, num_pages):
     return pages_to_apply
 
 # Streamlit app interface
-st.title("Add Header and Footer with Alignment, Font Options, and Page Numbers")
+st.title("Add Headers And Footers")
 
 # File upload
 uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
