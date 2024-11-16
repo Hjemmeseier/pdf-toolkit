@@ -65,7 +65,7 @@ def parse_page_ranges(page_ranges, num_pages):
     return pages_to_apply
 
 # Streamlit app interface
-st.title("Add Headers And Footers")
+st.title("Headers and footers 🙆🦶")
 
 # File upload
 uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
@@ -105,12 +105,16 @@ if st.button("Add Header and Footer"):
         # Generate updated PDF
         output_pdf = add_header_footer(pdf_data, header_text, footer_text, header_align, footer_align, header_font_size, footer_font_size, pages_to_apply_set, add_page_numbers, page_number_prefix)
 
+        # Determine the original file name and modify it
+        original_filename = uploaded_file.name
+        new_filename = f"{original_filename.split('.pdf')[0]}_modified.pdf"
+
         # Provide download button
         if output_pdf:
             st.download_button(
                 label="Download PDF with Header and Footer",
                 data=output_pdf,
-                file_name="pdf_with_header_footer.pdf",
+                file_name=new_filename,
                 mime="application/pdf"
             )
     else:
